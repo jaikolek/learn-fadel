@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System;
 
 namespace Learn.One
 {
@@ -12,18 +13,62 @@ namespace Learn.One
         public RectTransform rctTrfParent;
         public AssetReferenceT<GameObject> objPoolPrefab;
 
-        public List<GameObject> poolList = new List<GameObject>();
+        public int input;
 
-        private void Update()
+        private int count;
+        public int Count
         {
-            if (Input.GetKeyDown(KeyCode.Space)) // get
+            get => count;
+            set
             {
-                GetAsync();
-                //Get();
+                count = value;
+                OnCountChanged?.Invoke(value);
             }
         }
 
-        public async void GetAsync()
+        public event Action<int> OnCountChanged;
+
+        public List<GameObject> poolList = new List<GameObject>();
+
+        private void Awake()
+        {
+            OnCountChanged += Init;
+
+            Count = 4;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Count = input;
+            }
+        }
+
+        private async void Init(int count)
+        {
+            Release();
+
+            for (int i = 0; i < count; i++)
+            {
+                await GetAsync();
+            }
+        }
+
+        private void Release()
+        {
+            if (poolList.Count <= 0 || poolList == null) return;
+
+            foreach (GameObject obj in poolList)
+            {
+                if (obj.TryGetComponent(out ObjectPool objPool))
+                {
+                    objPool.Release();
+                }
+            }
+        }
+
+        public async Task GetAsync()
         {
             if (objPoolPrefab.Asset == null)
             {
@@ -79,6 +124,7 @@ namespace Learn.One
             {
                 AsyncOperationHandle<GameObject> handle = objPoolPrefab.LoadAssetAsync();
                 await handle.Task;
+                Debug.Log($"Here 2");
                 Debug.Log($"Picture Laoded");
             }
             catch (System.Exception e)

@@ -10,12 +10,17 @@ namespace Learn.One
 
         private void OnEnable()
         {
-            StartCoroutine(Delay(delay));
+            //StartCoroutine(Delay(delay));
         }
 
         private IEnumerator Delay(float delay)
         {
             yield return new WaitForSeconds(delay);
+            Release();
+        }
+
+        public void Release()
+        {
             this.gameObject.SetActive(false);
         }
     }
