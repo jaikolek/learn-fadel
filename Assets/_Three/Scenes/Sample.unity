@@ -237,7 +237,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4df6e8b3e23749145b84baf9962ba746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnSkillPrefab: {fileID: 547423903864628605, guid: 0fc7e7bcb1f5b9d4199345ecd435ff57, type: 3}
+  btnSkillPrefab:
+    m_AssetGUID: 0fc7e7bcb1f5b9d4199345ecd435ff57
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   rctTrfParent: {fileID: 303552479}
   btnSkillList: []
 --- !u!1 &248568824

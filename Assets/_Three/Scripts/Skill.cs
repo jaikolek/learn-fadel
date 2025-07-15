@@ -31,6 +31,7 @@ namespace Learn.Three
             }
         }
 
+        public event Action OnUse;
         public event Action<float> OnCooldown;
         public event Action OnSkillReady;
 
@@ -38,7 +39,7 @@ namespace Learn.Three
 
         private void Awake()
         {
-            cooldownTime = 0f;
+            ResetSkill();
         }
 
         public virtual string GetName()
@@ -52,6 +53,8 @@ namespace Learn.Three
             CooldownTime = cooldown;
 
             Debug.Log($"Use {skillName}");
+
+            OnUse?.Invoke();
         }
 
         public virtual void Tick()
@@ -69,6 +72,14 @@ namespace Learn.Three
                 IsCooldown = false;
                 OnSkillReady?.Invoke();
             }
+        }
+
+        public void ResetSkill()
+        {
+            cooldownTime = 0f;
+            OnUse = null;
+            OnCooldown = null;
+            OnSkillReady = null;
         }
     }
 }

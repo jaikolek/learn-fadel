@@ -1,15 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Learn.Three
 {
     public class UIManager : MonoBehaviour
     {
-        [SerializeField] private ButtonSkill btnSkillPrefab;
+        [SerializeField] private AssetReferenceT<GameObject> btnSkillPrefab;
         [SerializeField] private RectTransform rctTrfParent;
         
         [SerializeField] private List<ButtonSkill> btnSkillList = new List<ButtonSkill>();
@@ -48,19 +50,30 @@ namespace Learn.Three
             }
         }
 
-        public void Init(Skill skill, UnityAction OnUse)
+        public async void Init(Skill skill, UnityAction OnUse)
         {
             ButtonSkill btnSkill = GetButtonSkill();
 
             if (btnSkill == null)
             {
-                ButtonSkill generateBtnSkill = Instantiate<ButtonSkill>(btnSkillPrefab, rctTrfParent);
-                generateBtnSkill.name = "button " + skill.GetName();
+                if (btnSkillPrefab.Asset == null) await LoadAssetAsync();
 
-                generateBtnSkill.SkillName = skill.GetName();
-                generateBtnSkill.AddListener(OnUse);
+                GameObject generatedBtn = Instantiate<GameObject>(btnSkillPrefab.Asset as GameObject, rctTrfParent);
 
-                btnSkillList.Add(generateBtnSkill);
+                if (generatedBtn.TryGetComponent(out ButtonSkill generatedBtnSkill))
+                {
+                    generatedBtnSkill.name = "button " + skill.GetName();
+
+                    generatedBtnSkill.SkillName = skill.GetName();
+                    generatedBtnSkill.AddListener(OnUse);
+                    generatedBtnSkill.UpdateVisual(false);
+
+                    skill.OnUse += generatedBtnSkill.OnUse;
+                    skill.OnCooldown += generatedBtnSkill.OnCooldown;
+                    skill.OnSkillReady += generatedBtnSkill.OnSkillReady;
+
+                    btnSkillList.Add(generatedBtnSkill);
+                }
             }
             else
             {
@@ -68,8 +81,26 @@ namespace Learn.Three
 
                 btnSkill.SkillName = skill.GetName();
                 btnSkill.AddListener(OnUse);
+                btnSkill.UpdateVisual(false);
+
+                skill.OnUse += btnSkill.OnUse;
+                skill.OnCooldown += btnSkill.OnCooldown;
+                skill.OnSkillReady += btnSkill.OnSkillReady;
 
                 btnSkill.gameObject.SetActive(true);
+            }
+        }
+
+        private async Task LoadAssetAsync()
+        {
+            try
+            {
+                AsyncOperationHandle<GameObject> handle = btnSkillPrefab.LoadAssetAsync();
+                await handle.Task;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
             }
         }
 

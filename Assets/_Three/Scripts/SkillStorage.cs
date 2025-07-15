@@ -28,6 +28,7 @@ namespace Learn.Three
 
         public void RemoveSkill(Skill skill)
         {
+            skill.ResetSkill();
             skillList.Remove(skill);
             OnSkillChange?.Invoke(skillList);
         }

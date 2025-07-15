@@ -17,6 +17,11 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1555cbcfb31bda54d808474ba29b0e7b
   m_SerializeEntries:
+  - m_GUID: 0fc7e7bcb1f5b9d4199345ecd435ff57
+    m_Address: Assets/_Three/Prefabs/Btn Skill.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: baeda4864b0beea4f869350fe1c425bf
     m_Address: Assets/GameObject (4).prefab
     m_ReadOnly: 0
